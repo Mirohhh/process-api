@@ -106,7 +106,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .route("/", get(dashboard_page))
-        .route("/health", get(|| async { "OK" }))
+        .route(
+            "/health",
+            get(|| async { (StatusCode::OK, "OK").into_response() }),
+        )
         // Legacy endpoints (kept for compatibility)
         .route("/api/processes", get(get_latest_processes))
         .route("/api/processes", post(receive_processes))

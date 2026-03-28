@@ -106,6 +106,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .route("/", get(dashboard_page))
+        .route("/health", get(|| async { "OK" }))
         // Legacy endpoints (kept for compatibility)
         .route("/api/processes", get(get_latest_processes))
         .route("/api/processes", post(receive_processes))
@@ -129,7 +130,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
+    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
 
     println!("🚀 Dashboard API running on http://localhost:3000");
     println!("   → Open this in your browser: http://localhost:3000");

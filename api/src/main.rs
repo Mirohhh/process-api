@@ -96,7 +96,7 @@ const MAX_SNAPSHOTS_PER_HOST: usize = 300;
 /// - Versioned host/snapshot endpoints (`/api/v1/...`)
 /// - SSE stream (`/api/v1/events`)
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (events_tx, _events_rx) = broadcast::channel::<SseMessage>(512);
 
     let state = AppState {
@@ -129,7 +129,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
 
     println!("🚀 Dashboard API running on http://localhost:3000");
     println!("   → Open this in your browser: http://localhost:3000");
@@ -138,7 +138,9 @@ async fn main() {
     println!("   → v1 snapshots: http://localhost:3000/api/v1/hosts/{{hostname}}/snapshots?since=0&limit=50");
     println!("   → v1 events (SSE): http://localhost:3000/api/v1/events\n");
 
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await?;
+
+    Ok(())
 }
 
 /// Builds an empty payload used by legacy compatibility responses.

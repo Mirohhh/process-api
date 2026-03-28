@@ -124,6 +124,7 @@ async fn main() {
             axum::routing::delete(remove_host),
         )
         .route("/api/v1/events", get(events_stream))
+        .fallback(not_found)
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())
         .with_state(state);
@@ -156,6 +157,37 @@ fn not_found_json(message: &str) -> Response {
         Json(serde_json::json!({ "error": message })),
     )
         .into_response()
+}
+
+/// Catch-all 404 handler for unhandled routes.
+async fn not_found() -> impl axum::response::IntoResponse {
+    (
+        StatusCode::NOT_FOUND,
+        Html(
+            r#"<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <style>
+        body { background: #09090b; color: #fafafa; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; text-align: center; }
+        h1 { font-size: 6rem; margin: 0; }
+        p { font-size: 1.25rem; color: #a1a1aa; margin: 0.5rem 0 2rem; }
+        a { background: #22c55e; color: #000; padding: 0.6rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; }
+        a:hover { background: #16a34a; }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>404</h1>
+        <p>This page doesn't exist</p>
+        <a href="/">Go Home</a>
+    </div>
+</body>
+</html>"#.to_string(),
+        ),
+    )
 }
 
 // ─────────────────────────────────────────────────────────────

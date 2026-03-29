@@ -8,7 +8,7 @@
 use dashboard_shared::{DashboardPayload, ProcessInfo};
 use std::error::Error;
 use sysinfo::{Process, ProcessRefreshKind, ProcessesToUpdate, System};
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 /// Collects a fresh process sample from `sys` and posts it to `url`.
 ///
@@ -75,7 +75,7 @@ async fn send_to_dashboard(sys: &mut System, url: &str) -> Result<(), Box<dyn Er
 #[tokio::main]
 async fn main() {
     // Ingest endpoint exposed by the API service.
-    let dashboard_url = "http://localhost:3000/api/processes";
+    let dashboard_url = "https://processes.up.railway.app/api/processes";
 
     // Keep one persistent `System` instance for stable delta-based CPU sampling.
     let mut sys = System::new_all();

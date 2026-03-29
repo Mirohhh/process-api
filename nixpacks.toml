@@ -1,0 +1,7 @@
+[phases.build]
+cmds = [
+    "cargo build --release -p process-dashboard-api"
+]
+
+[start]
+cmd = "./target/release/process-dashboard-api"

@@ -324,10 +324,10 @@ async fn dashboard_page() -> Html<String> {
                 `<option value="${h.hostname}">${h.hostname} (${h.process_count} procs)</option>`
             ).join('');
 
-            if (preferredHost && hosts.some(h => h.hostname === preferredHost)) {
-                selectedHost = preferredHost;
-            } else if (current && hosts.some(h => h.hostname === current)) {
+            if (current && hosts.some(h => h.hostname === current)) {
                 selectedHost = current;
+            } else if (preferredHost && hosts.some(h => h.hostname === preferredHost)) {
+                selectedHost = preferredHost;
             } else {
                 selectedHost = hosts[0].hostname;
             }
@@ -351,6 +351,11 @@ async fn dashboard_page() -> Html<String> {
             }
         }
 
+        async function refreshSelectedHostData() {
+            if (!selectedHost) return;
+            await loadHostData();
+        }
+
         function startEvents() {
             if (evtSource !== null) return;
 
@@ -359,7 +364,8 @@ async fn dashboard_page() -> Html<String> {
             evtSource.addEventListener('host_updated', async (event) => {
                 try {
                     const msg = JSON.parse(event.data);
-                    await refreshHosts(msg.hostname || '');
+                    await refreshHosts('');
+                    await refreshSelectedHostData();
                 } catch (_e) {
                     await refreshHosts('');
                 }

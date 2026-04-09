@@ -1,20 +1,20 @@
 // api/src/main.rs
 
 use axum::{
+    Json, Router,
     extract::{Path, Query, State},
     http::StatusCode,
     response::{
-        sse::{Event, KeepAlive, Sse},
         Html, IntoResponse, Response,
+        sse::{Event, KeepAlive, Sse},
     },
     routing::{get, post},
-    Json, Router,
 };
 use dashboard_shared::DashboardPayload;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, convert::Infallible, sync::Arc, time::Duration};
-use tokio::sync::{broadcast, RwLock};
-use tokio_stream::{wrappers::BroadcastStream, StreamExt};
+use tokio::sync::{RwLock, broadcast};
+use tokio_stream::{StreamExt, wrappers::BroadcastStream};
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
 /// Shared application state injected into all route handlers.
@@ -140,7 +140,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("   → Open this in your browser: http://localhost:3000");
     println!("   → Sender posts to: http://localhost:3000/api/processes");
     println!("   → v1 hosts: http://localhost:3000/api/v1/hosts");
-    println!("   → v1 snapshots: http://localhost:3000/api/v1/hosts/{{hostname}}/snapshots?since=0&limit=50");
+    println!(
+        "   → v1 snapshots: http://localhost:3000/api/v1/hosts/{{hostname}}/snapshots?since=0&limit=50"
+    );
     println!("   → v1 events (SSE): http://localhost:3000/api/v1/events\n");
 
     axum::serve(listener, app).await?;
@@ -420,7 +422,7 @@ async fn dashboard_page() -> Html<String> {
     <div class="max-w-7xl mx-auto">
         <div class="flex items-center justify-between mb-8 gap-4 flex-wrap">
             <h1 class="text-4xl font-bold flex items-center gap-3">
-                📡 Process Dashboard
+                Process Dashboard
                 <span class="text-sm bg-green-500 text-black px-3 py-1 rounded-full font-mono">LIVE (SSE)</span>
             </h1>
 

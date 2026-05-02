@@ -74,8 +74,16 @@ async fn send_to_dashboard(sys: &mut System, url: &str) -> Result<(), Box<dyn Er
 
 #[tokio::main]
 async fn main() {
-    // Ingest endpoint exposed by the API service.
-    let dashboard_url = "https://processes.up.railway.app/api/processes";
+    // Ingest endpoint passed as first CLI argument.
+    // Example: cargo run -- http://localhost:3000/api/processes
+    let dashboard_url = match std::env::args().nth(1) {
+        Some(url) => url,
+        None => {
+            eprintln!("Usage: sender <dashboard_ingest_url>");
+            eprintln!("Example: sender http://localhost:3000/api/processes");
+            std::process::exit(2);
+        }
+    };
 
     // Keep one persistent `System` instance for stable delta-based CPU sampling.
     let mut sys = System::new_all();
@@ -96,7 +104,7 @@ async fn main() {
     // - wait 2 seconds
     // - repeat
     loop {
-        if let Err(e) = send_to_dashboard(&mut sys, dashboard_url).await {
+        if let Err(e) = send_to_dashboard(&mut sys, &dashboard_url).await {
             eprintln!("Error: {}", e);
         }
         sleep(Duration::from_secs(2)).await;

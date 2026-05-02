@@ -33,19 +33,25 @@ Each `ProcessInfo` includes:
 
 From workspace root:
 
-```/dev/null/commands.sh#L1-4
+```/dev/null/commands.sh#L1-5
 cargo run -p process-dashboard-api
-cargo run -p process-sender
+cargo run -p process-sender -- http://localhost:3000/api/processes
 # open http://localhost:3000
+# health check: http://localhost:3000/health
 ```
 
-Sender currently posts every 2 seconds to:
+Sender posts every 2 seconds to the URL you pass on the CLI.
 
-- `http://localhost:3000/api/processes`
+If no URL is provided, it exits with usage help.
 
 ---
 
 ## API overview
+
+### Operational endpoint
+
+- `GET /health`  
+  Returns `200 OK` with body `OK`.
 
 ### Legacy endpoints (kept for compatibility)
 
@@ -70,6 +76,27 @@ Sender currently posts every 2 seconds to:
 ---
 
 ## Endpoint details + examples
+
+## `GET /health`
+
+Simple liveness endpoint.
+
+Example:
+
+```/dev/null/curl.sh#L1-1
+curl -i http://localhost:3000/health
+```
+
+Example response:
+
+```/dev/null/http.txt#L1-3
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+
+OK
+```
+
+---
 
 ## `POST /api/processes`
 

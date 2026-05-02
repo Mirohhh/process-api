@@ -27,7 +27,11 @@ Each `ProcessInfo` includes:
 - `memory_kb: u64`
 - `status: String`
 
----
+## Running without building
+You can get pre-built binaries from the release page and run it with:
+```
+./process-sender.exe <url>/api/processes
+```
 
 ## Running locally
 
@@ -35,7 +39,7 @@ From workspace root:
 
 ```/dev/null/commands.sh#L1-5
 cargo run -p process-dashboard-api
-cargo run -p process-sender -- http://localhost:3000/api/processes
+cargo run -p process-sender <url>/api/processes
 # open http://localhost:3000
 # health check: http://localhost:3000/health
 ```
@@ -44,7 +48,6 @@ Sender posts every 2 seconds to the URL you pass on the CLI.
 
 If no URL is provided, it exits with usage help.
 
----
 
 ## API overview
 
@@ -73,7 +76,6 @@ If no URL is provided, it exits with usage help.
 - `GET /api/v1/events`  
   SSE stream for typed events.
 
----
 
 ## Endpoint details + examples
 
@@ -95,8 +97,6 @@ content-type: text/plain; charset=utf-8
 
 OK
 ```
-
----
 
 ## `POST /api/processes`
 
@@ -128,7 +128,6 @@ Success response:
 "✅ Data received"
 ```
 
----
 
 ## `GET /api/v1/hosts`
 
@@ -158,7 +157,6 @@ Example response:
 ]
 ```
 
----
 
 ## `GET /api/v1/hosts/{hostname}/processes`
 
@@ -178,7 +176,6 @@ Not found response (`404`):
 }
 ```
 
----
 
 ## `GET /api/v1/hosts/{hostname}/snapshots?since=<unix>&limit=<n>`
 
@@ -203,7 +200,6 @@ Not found response (`404`):
 }
 ```
 
----
 
 ## `DELETE /api/v1/hosts/{hostname}`
 
@@ -224,7 +220,6 @@ Example response:
 }
 ```
 
----
 
 ## `GET /api/v1/events` (SSE)
 
@@ -251,7 +246,6 @@ event: host_removed
 data: {"type":"host_removed","hostname":"dev-machine"}
 ```
 
----
 
 ## Notes
 
